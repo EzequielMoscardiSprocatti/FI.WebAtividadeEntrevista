@@ -1,0 +1,135 @@
+﻿@using System.Data
+@model WebAtividadeEntrevista.Models.ClienteModel
+@{
+    ViewBag.Title = "Alterar Cliente";
+    DataTable table = new DataTable();
+    table = ViewBag.Beneficiario;
+}
+@section scripts{
+    <script>
+        var urlPost = '@Url.Action("Alterar", "Cliente", new { area = "" })';
+        var obj = @Html.Raw(Json.Encode(Model));
+        var urlRetorno = '@Url.Action("Index", "Cliente", new { area = "" })';
+        var urlBenef = '@Url.Action("AddBeneficiario", "Cliente", new { area = ""})';
+        var urlBenefList = '@Url.Action("BeneficiarioList", "Cliente", new { area = "" })';
+        var urlPostAltBenf = '@Url.Action("AlterarBeneficiario", "Cliente", new { area = "" })';
+    </script>
+
+    <script src="~/Scripts/Clientes/FI.ListBeneficiarios.js" type="text/javascript"></script>
+    <script src="~/Scripts/Clientes/FI.AltBeneficiarios.js" type="text/javascript"></script>
+
+    @Scripts.Render("~/bundles/altClientes")
+    @Scripts.Render("~/Scripts/Clientes/FI.ListBeneficiarios.js")
+
+
+
+}
+<h2>@Html.Raw(ViewBag.Title)</h2>
+
+@Html.Partial("Forms")
+
+
+<!-- Modal Cadastro de Beneficiario-->
+<div class="modal fade" id="CadBeneficiario" tabindex="-1" role="dialog" aria-labelledby="CadBeneficiario" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CadBeneficiario1">Beneficiários</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="formCadBeneficiario" method="post">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label for="Nome">CPF:</label>
+                                <input required="required" oninput="mascaracpf(this)" onblur="validarCPF(this)" type="text" class="form-control" id="CPF_Benf" name="CPF_Benf" placeholder="Ex.: 000.000.000-00" maxlength="50">
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label for="Sobrenome">Nome:</label>
+                                <input required="required" type="text" class="form-control" id="Nome_Benf" name="Nome_Benf" placeholder="Ex.: da Silva" maxlength="255">
+                                <input type="text" class="hidden" id="IdCliente_Benf" name="IdCliente_Benf" value="2022">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <label for="incluir">Opção</label>
+                                <button type="submit" class="btn btn-sm btn-success">Incluir</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">CPF</th>
+                        <th scope="col">NOME</th>
+                        <th scope="col">Alterar</th>
+                        <th scope="col">Deletar</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @{
+
+                        try
+                        {
+                            foreach (DataRow row in table.Rows)
+                            {
+
+
+                                using(Html.BeginForm("AlterarBeneficiario", "Cliente", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                                {
+                                    <tr>
+                                        <input value="@row["ID"].ToString()" class="hidden" type="text" id="Id" name="Id"/>
+
+                                        <td>
+                                            <input required="required" oninput="mascaracpf(this)" onblur="validarCPF(this)" type="text" class="form-control" id="CPF" name="CPF" placeholder="Ex.: 000.000.000-00" maxlength="50" value=" @row["CPF"].ToString()">
+
+                                        </td>
+
+                                        <td>
+                                            <input required="required" type="text" class="form-control" id="Nome" name="Nome" placeholder="Ex.: da Silva" maxlength="255" value="@row["NOME"].ToString()">
+
+                                        </td>
+
+                                        <td>
+                                            <button type="submit" class="btn btn-primary">Alterar</button>
+                                        </td>
+
+                                        <td>
+                                            <!--Html.ActionLink("Deletar", "DeletarBeneficiario", "Cliente", new { Id = row["ID"].ToString() }, new { class = "btn btn-danger" }, new { method = "post" })-->
+                                            @Ajax.ActionLink("Delete", "DeletarBeneficiario", "Cliente", new { Id = @row["ID"].ToString() }, new AjaxOptions { HttpMethod = "POST" }, new { @class = "btn btn-danger" })
+                                        </td>
+                                    </tr>
+                                }
+
+                            }
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+
+
+                    }
+
+                </tbody>
+            </table>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

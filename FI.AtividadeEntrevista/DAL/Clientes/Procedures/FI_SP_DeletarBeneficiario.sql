@@ -1,0 +1,9 @@
+﻿CREATE PROCEDURE FI_SP_DeletarBeneficiario
+	@ID BIGINT
+AS
+BEGIN
+	DELETE BENEFICIARIOS WHERE ID = @ID
+END
+
+--DROP PROCEDURE [FI_SP_DeletarBeneficiario];  
+--GO  
